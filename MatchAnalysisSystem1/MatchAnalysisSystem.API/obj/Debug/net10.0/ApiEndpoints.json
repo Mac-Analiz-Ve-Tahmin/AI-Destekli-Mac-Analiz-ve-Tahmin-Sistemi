@@ -1,0 +1,23 @@
+[
+  {
+    "ContainingType": "MatchAnalysisSystem.API.Controllers.MatchController",
+    "Method": "GetPrediction",
+    "RelativePath": "api/Match/predict/{homeTeam}/{awayTeam}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "homeTeam",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "awayTeam",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

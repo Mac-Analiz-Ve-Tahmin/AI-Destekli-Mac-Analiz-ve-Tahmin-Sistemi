@@ -1,0 +1,16 @@
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\bin\Debug\net10.0\MatchAnalysisSystem.DataAccess.deps.json
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\bin\Debug\net10.0\MatchAnalysisSystem.DataAccess.dll
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\bin\Debug\net10.0\MatchAnalysisSystem.DataAccess.pdb
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\bin\Debug\net10.0\MatchAnalysisSystem.Core.dll
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\bin\Debug\net10.0\MatchAnalysisSystem.Core.pdb
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.csproj.AssemblyReference.cache
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.AssemblyInfoInputs.cache
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.AssemblyInfo.cs
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.sourcelink.json
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAna.405B54FE.Up2Date
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.dll
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\refint\MatchAnalysisSystem.DataAccess.dll
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\MatchAnalysisSystem.DataAccess.pdb
+C:\Users\MSI\Desktop\Projeler\AI-Destekli-Mac-Analiz-ve-Tahmin-Sistemi\MatchAnalysisSystem1\MatchAnalysisSystem.DataAccess\obj\Debug\net10.0\ref\MatchAnalysisSystem.DataAccess.dll

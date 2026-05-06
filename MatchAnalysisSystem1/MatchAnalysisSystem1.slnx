@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="MatchAnalysisSystem.API/MatchAnalysisSystem.API.csproj" />
+  <Project Path="MatchAnalysisSystem.Business/MatchAnalysisSystem.Business.csproj" />
+  <Project Path="MatchAnalysisSystem.Core/MatchAnalysisSystem.Core.csproj" />
+  <Project Path="MatchAnalysisSystem.DataAccess/MatchAnalysisSystem.DataAccess.csproj" />
+  <Project Path="MatchAnalysisSystem.Test/MatchAnalysisSystem.Test.csproj" />
+</Solution>
