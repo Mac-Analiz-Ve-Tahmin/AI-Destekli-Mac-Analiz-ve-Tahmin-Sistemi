@@ -15,6 +15,13 @@ namespace MatchAnalysisSystem.Business
 
         public async Task<object> GetMatchPredictionAsync(string homeTeam, string awayTeam)
         {
+            // --- SCRUM-12: Validation (Doğrulama) Eklentisi ---
+            // Sistem gereksiz yere API'ye gitmesin veya patlamasın diye en başta kontrol ediyoruz.
+            if (string.IsNullOrWhiteSpace(homeTeam) || string.IsNullOrWhiteSpace(awayTeam))
+            {
+                throw new ArgumentException("Takım isimleri boş bırakılamaz!");
+            }
+
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MatchAnalysisSystem.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b96982382ade7d5fbd3e22134f2a9b0f4daa4d67")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7c86b57b8b81f41a0177c5e59205e4a14e0deca")]
 [assembly: System.Reflection.AssemblyProductAttribute("MatchAnalysisSystem.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MatchAnalysisSystem.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
