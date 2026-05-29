@@ -1,0 +1,11 @@
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\bin\Debug\net8.0\MatchAnalysisSystem.Core.deps.json
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\bin\Debug\net8.0\MatchAnalysisSystem.Core.dll
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\bin\Debug\net8.0\MatchAnalysisSystem.Core.pdb
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\MatchAnalysisSystem.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\MatchAnalysisSystem.Core.AssemblyInfoInputs.cache
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\MatchAnalysisSystem.Core.AssemblyInfo.cs
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\MatchAnalysisSystem.Core.csproj.CoreCompileInputs.cache
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\MatchAnalysisSystem.Core.dll
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\refint\MatchAnalysisSystem.Core.dll
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\MatchAnalysisSystem.Core.pdb
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.Core\obj\Debug\net8.0\ref\MatchAnalysisSystem.Core.dll

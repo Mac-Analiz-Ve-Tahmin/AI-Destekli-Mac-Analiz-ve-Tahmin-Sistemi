@@ -1,0 +1,95 @@
+[
+  {
+    "ContainingType": "MatchAnalysisSystem.API.Controllers.MatchController",
+    "Method": "AddMatchHistory",
+    "RelativePath": "api/Match/add-match-history",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "MatchAnalysisSystem.API.Controllers.MatchHistoryInput",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MatchAnalysisSystem.API.Controllers.MatchController",
+    "Method": "AddTeam",
+    "RelativePath": "api/Match/add-team",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "attack",
+        "Type": "System.Double",
+        "IsRequired": false
+      },
+      {
+        "Name": "defense",
+        "Type": "System.Double",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MatchAnalysisSystem.API.Controllers.MatchController",
+    "Method": "GetLiveDailyFixtures",
+    "RelativePath": "api/Match/daily-fixtures",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MatchAnalysisSystem.API.Controllers.MatchController",
+    "Method": "PredictMatchFromDb",
+    "RelativePath": "api/Match/predict",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "homeTeamId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "awayTeamId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "homeTeamName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "awayTeamName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MatchAnalysisSystem.API.Controllers.MatchController",
+    "Method": "GetTeams",
+    "RelativePath": "api/Match/teams",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

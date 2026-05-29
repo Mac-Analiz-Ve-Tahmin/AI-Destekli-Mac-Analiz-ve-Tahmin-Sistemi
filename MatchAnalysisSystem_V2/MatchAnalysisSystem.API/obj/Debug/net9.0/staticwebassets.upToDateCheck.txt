@@ -1,0 +1,2 @@
+C:\Users\Abdulkadir\Desktop\projeler\MatchAnalysisSystem\MatchAnalysisSystem.API\wwwroot\index.html
+wwwroot\index.html

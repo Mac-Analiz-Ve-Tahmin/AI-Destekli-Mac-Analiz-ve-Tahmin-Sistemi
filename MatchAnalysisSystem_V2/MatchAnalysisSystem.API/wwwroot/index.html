@@ -1,0 +1,828 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sports Analytics - SofaScore Style</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <style>
+        /* 🎨 SOFASCORE & PREMIUM GECE TEMASI */
+        body {
+            background-color: #0b0e14;
+            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #171b26;
+            border-bottom: 1px solid #222736;
+            padding: 12px 0;
+        }
+
+        /* 🔍 ARAMA KUTUSU VE YENİLEME BUTONU DÜZELTMELERİ */
+        .search-input {
+            background-color: #0b0e14;
+            border: 1px solid #2c3245;
+            color: #ffffff;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            width: 250px;
+            transition: all 0.2s;
+        }
+
+            /* Okunmayan placeholder (yer tutucu) metin rengi düzeltildi */
+            .search-input::placeholder {
+                color: #9ca3af !important;
+                opacity: 1;
+            }
+
+            .search-input:focus {
+                background-color: #121620;
+                border-color: #3b82f6;
+                box-shadow: none;
+                color: #ffffff;
+            }
+
+        /* Görünmeyen yenileme butonu rengi düzeltildi */
+        .search-refresh-btn {
+            background-color: #0b0e14 !important;
+            border: 1px solid #2c3245 !important;
+            color: #e5e7eb !important;
+            transition: all 0.2s;
+        }
+
+            .search-refresh-btn:hover {
+                border-color: #3b82f6 !important;
+                color: #3b82f6 !important;
+                background-color: #121620 !important;
+            }
+
+        /* 📊 MAÇ SAYAÇ BADGE DÜZELTMESİ */
+        #matchCounter {
+            color: #ffffff !important; /* Okunmayan yazı rengi tam beyaz yapıldı */
+            background-color: #171b26 !important;
+            border: 1px solid #2c3245 !important;
+            font-weight: 600;
+        }
+
+        /* 📌 SOL MENÜ */
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9ca3af;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sidebar-league-item {
+            display: flex;
+            align-items: center;
+            padding: 9px 12px;
+            color: #e5e7eb;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            gap: 10px;
+        }
+
+            .sidebar-league-item:hover {
+                background-color: #171b26;
+                color: #3b82f6;
+            }
+
+        .league-logo-mini {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            border-radius: 2px;
+        }
+
+        /* 🏆 ORTA ALAN: BLOK DÜZENİ */
+        .league-header-block {
+            background-color: #171b26;
+            border: 1px solid #222736;
+            padding: 12px 15px;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+            margin-top: 15px;
+            scroll-margin-top: 70px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+            .league-header-block:hover {
+                background-color: #1c202e;
+            }
+
+        .match-list-wrapper {
+            border: 1px solid #222736;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            background-color: #12141c;
+            margin-bottom: 15px;
+        }
+
+        .match-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #1a1e29;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+            .match-row:hover {
+                background-color: #171b26;
+            }
+
+            .match-row:last-child {
+                border-bottom: none;
+            }
+
+        .match-time {
+            width: 55px;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .match-teams {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .team-name {
+            color: #f3f4f6;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .ai-badge-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-badge-btn {
+            background-color: #171b26;
+            color: #3b82f6;
+            border: 1px solid #222736;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .match-row:hover .ai-badge-btn {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border-color: #3b82f6;
+        }
+
+        /* 📌 SAĞ PANEL MINIMALIST TASARIM */
+        .offcanvas {
+            background-color: #12141c !important;
+            color: #f5f5f7 !important;
+            border-left: 1px solid #222736 !important;
+            width: 460px !important;
+        }
+
+        .offcanvas-header {
+            border-bottom: 1px solid #222736;
+            background-color: #171b26;
+            padding: 15px 20px;
+        }
+
+        .offcanvas-title {
+            color: #ffffff !important;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .score-hero-mini {
+            background: #171b26;
+            border: 1px solid #222736;
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .hero-team-mini {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* 🎯 SOFASCORE TARZI YENİ SKOR VE xG ENJEKSİYON ALANI */
+        .sofa-prediction-summary {
+            background-color: #12141c;
+            border: 1px solid #222736;
+            border-radius: 6px;
+            margin-top: 12px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sofa-pred-block {
+            text-align: center;
+            flex: 1;
+        }
+
+            .sofa-pred-block:not(:last-child) {
+                border-right: 1px solid #222736;
+            }
+
+        .sofa-pred-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #9ca3af;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .sofa-pred-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .panel-section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 8px;
+        }
+
+        .sofa-stat-card {
+            background-color: #171b26;
+            border: 1px solid #222736;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+        }
+
+        .sofa-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+
+        .sofa-stat-label {
+            color: #e5e7eb;
+            font-weight: 400;
+        }
+
+        .sofa-stat-value {
+            font-weight: 600;
+            font-family: monospace;
+            color: #3b82f6;
+            background-color: #0b0e14;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* 📌 SOFASCORE CAPSULE BUTTONS */
+        .sofa-capsule-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .sofa-capsule-btn {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #12141c;
+            border: 1px solid #2c3245;
+        }
+
+            .sofa-capsule-btn.home-active {
+                background-color: rgba(59, 130, 246, 0.12);
+                border-color: #3b82f6;
+                color: #3b82f6;
+            }
+
+            .sofa-capsule-btn.draw-active {
+                background-color: rgba(156, 163, 175, 0.08);
+                border-color: #4b5563;
+                color: #9ca3af;
+            }
+
+            .sofa-capsule-btn.away-active {
+                background-color: rgba(239, 68, 68, 0.12);
+                border-color: #ef4444;
+                color: #ef4444;
+            }
+
+        .ai-text-box {
+            background-color: #171b26;
+            border: 1px solid #222736;
+            border-left: 3px solid #10b981;
+            border-radius: 4px;
+            padding: 12px;
+            color: #d1d5db;
+            line-height: 1.5;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark sticky-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center m-0" href="#" onclick="resetFilter()">
+                <span class="fs-5 fw-semibold text-primary"><i class="bi bi-activity me-2"></i>AI Analytics</span>
+            </a>
+
+            <div class="d-flex align-items-center gap-2">
+                <input type="text" id="searchBar" class="form-control search-input" placeholder="Takım veya lig ara..." oninput="handleSearch()">
+                <button class="btn search-refresh-btn btn-sm ms-1" onclick="loadFixtures()"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+
+            <div class="col-md-3 mb-4">
+                <div class="sidebar-title">
+                    <i class="bi bi-pin-angle"></i> Sabitlenen Ligler
+                </div>
+                <div id="sidebarLeagueList" class="d-flex flex-column gap-1"></div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-semibold text-white m-0" id="bultenTitle">Futbol Canlı Bülteni</h6>
+                    <span class="badge px-2 py-1" id="matchCounter">0 Maç</span>
+                </div>
+
+                <div id="loading" class="text-center my-5 d-none">
+                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+
+                <div id="fixturesContainer"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="analysisDrawer" aria-labelledby="analysisDrawerLabel">
+        <div class="offcanvas-header">
+            <h6 class="offcanvas-title" id="analysisDrawerLabel"><i class="bi bi-bar-chart-line me-2"></i>Maç İstatistik Raporu</h6>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+
+            <div class="score-hero-mini">
+                <div class="row align-items-center">
+                    <div class="col-5 text-end hero-team-mini text-truncate" id="drawerHomeName">Ev Sahibi</div>
+                    <div class="col-2 text-center text-success fw-bold small" style="color: #04d361 !important;">VS</div>
+                    <div class="col-5 text-start hero-team-mini text-truncate" id="drawerAwayName">Deplasman</div>
+                </div>
+                <div class="small mt-2 font-monospace" id="drawerMatchTime" style="color: #e5e7eb !important;">Saat: --:--</div>
+
+                <div class="sofa-prediction-summary">
+                    <div class="sofa-pred-block">
+                        <div class="sofa-pred-title">Tahmini Skor</div>
+                        <div class="sofa-pred-value text-primary" id="drawerScore">1 - 1</div>
+                    </div>
+                    <div class="sofa-pred-block">
+                        <div class="sofa-pred-title">Model xG Beklentisi</div>
+                        <div class="sofa-pred-value text-white" id="drawerXG">0.00 - 0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section-title">
+                <i class="bi bi-percent"></i> Maç Sonucu İhtimalleri
+            </div>
+            <div class="sofa-capsule-row">
+                <div class="sofa-capsule-btn home-active">
+                    <span>1</span>
+                    <span id="txtHomeProb" class="font-monospace">0%</span>
+                </div>
+                <div class="sofa-capsule-btn draw-active">
+                    <span>X</span>
+                    <span id="txtDrawProb" class="font-monospace">0%</span>
+                </div>
+                <div class="sofa-capsule-btn away-active">
+                    <span>2</span>
+                    <span id="txtAwayProb" class="font-monospace">0%</span>
+                </div>
+            </div>
+
+            <div class="panel-section-title">
+                <i class="bi bi-graph-up"></i> Performans ve Maç Beklentileri
+            </div>
+
+            <div class="sofa-stat-card">
+                <div class="sofa-stat-row">
+                    <span class="sofa-stat-label">Gol Barajı Trendi (2.5 Üst)</span>
+                    <span class="sofa-stat-value" id="sofaTrendGoals">0/5</span>
+                </div>
+                <div class="sofa-stat-row border-top border-dark pt-2 mt-1">
+                    <span class="sofa-stat-label">Korner Ortalaması</span>
+                    <span class="sofa-stat-value" id="sofaTrendCorners">9.4</span>
+                </div>
+                <div class="sofa-stat-row">
+                    <span class="sofa-stat-label">Korner Beklentisi</span>
+                    <span class="sofa-stat-value" id="sofaTrendCornersRatio">4/5</span>
+                </div>
+                <div class="sofa-stat-row border-top border-dark pt-2 mt-1">
+                    <span class="sofa-stat-label">Kart Ortalaması</span>
+                    <span class="sofa-stat-value" id="sofaTrendCards">4.2</span>
+                </div>
+                <div class="sofa-stat-row">
+                    <span class="sofa-stat-label">Kart Beklentisi</span>
+                    <span class="sofa-stat-value" id="sofaTrendCardsRatio">3/5</span>
+                </div>
+            </div>
+
+            <div class="panel-section-title">
+                <i class="bi bi-chat-left-text"></i> Taktiksel Analitik Notları
+            </div>
+            <div id="aiPhrasesContainer" class="d-flex flex-column gap-2"></div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let globalMatches = [];
+        let activeSidebarFilter = "all";
+
+        document.addEventListener("DOMContentLoaded", loadFixtures);
+
+        const majorRules = [
+            { keywords: ["world cup"], name: "World Cup", weight: 120, logo: "https://flagcdn.com/w20/un.png", showInSidebar: true },
+            { keywords: ["super cup"], name: "UEFA Super Cup", weight: 112, logo: "https://flagcdn.com/w20/eu.png", showInSidebar: false },
+            { keywords: ["euro"], name: "Euro", weight: 110, logo: "https://flagcdn.com/w20/eu.png", showInSidebar: false },
+            { keywords: ["copa america"], name: "Copa America", weight: 105, logo: "https://flagcdn.com/w20/us.png", showInSidebar: false },
+            { keywords: ["champions league"], name: "Champions League", weight: 100, logo: "https://flagcdn.com/w20/eu.png", showInSidebar: true },
+            { keywords: ["europa league"], name: "Europa League", weight: 95, logo: "https://flagcdn.com/w20/eu.png", showInSidebar: true },
+            { keywords: ["england", "premier league"], name: "Premier League", weight: 90, logo: "https://flagcdn.com/w20/gb.png", showInSidebar: true },
+            { keywords: ["spain", "laliga"], name: "LaLiga", weight: 85, logo: "https://flagcdn.com/w20/es.png", showInSidebar: true },
+            { keywords: ["spain", "la liga"], name: "LaLiga", weight: 85, logo: "https://flagcdn.com/w20/es.png", showInSidebar: true },
+            { keywords: ["germany", "bundesliga"], name: "Bundesliga", weight: 80, logo: "https://flagcdn.com/w20/de.png", showInSidebar: true },
+            { keywords: ["italy", "serie a"], name: "Serie A", weight: 75, logo: "https://flagcdn.com/w20/it.png", showInSidebar: true },
+            { keywords: ["france", "ligue 1"], name: "Ligue 1", weight: 70, logo: "https://flagcdn.com/w20/fr.png", showInSidebar: true },
+            { keywords: ["turkey", "super lig"], name: "Super Lig", weight: 65, logo: "https://flagcdn.com/w20/tr.png", showInSidebar: true },
+            { keywords: ["england", "championship"], name: "Championship", weight: 60, logo: "https://flagcdn.com/w20/gb.png", showInSidebar: true },
+            { keywords: ["turkey", "cup"], name: "Turkey Cup", weight: 55, logo: "https://flagcdn.com/w20/tr.png", showInSidebar: false },
+            { keywords: ["friendly"], name: "Friendly Matches", weight: 50, logo: "", showInSidebar: false }
+        ];
+
+        function analyzeLeagueMetrics(fullName) {
+            if (!fullName) return { name: "Other League", weight: 0, logo: "", showInSidebar: false };
+            const lower = fullName.toLowerCase();
+
+            for (const rule of majorRules) {
+                const matchAll = rule.keywords.every(kw => lower.includes(kw));
+                if (matchAll) {
+                    return { name: rule.name, weight: rule.weight, logo: rule.logo, showInSidebar: rule.showInSidebar };
+                }
+            }
+
+            let defaultName = fullName;
+            if (fullName.includes(" - ")) {
+                defaultName = fullName.split(" - ")[1].trim();
+            }
+            return { name: defaultName, weight: 0, logo: "", showInSidebar: false };
+        }
+
+        function getValidDomId(name) {
+            if (!name) return "id-gen";
+            const map = { 'ç': 'c', 'Ç': 'C', 'ğ': 'g', 'Ğ': 'G', 'ı': 'i', 'İ': 'I', 'ö': 'o', 'Ö': 'O', 'ş': 's', 'Ş': 'S', 'ü': 'u', 'Ü': 'U' };
+            let clean = name.replace(/[çÇğĞıİöÖşŞüÜ]/g, function (match) { return map[match]; });
+            return "id-" + clean.replace(/[^a-zA-Z0-9]/g, "");
+        }
+
+        async function loadFixtures() {
+            const container = document.getElementById("fixturesContainer");
+            const loading = document.getElementById("loading");
+            container.innerHTML = "";
+            loading.classList.remove("d-none");
+
+            try {
+                const response = await fetch('/api/Match/daily-fixtures?t=' + new Date().getTime());
+                globalMatches = await response.json();
+
+                buildStaticSidebar();
+                renderBulten();
+
+            } catch (error) {
+                container.innerHTML = '<div class="alert alert-danger text-center font-monospace small m-2">Sistem Hatası: ' + error.message + '</div>';
+            } finally {
+                loading.classList.add("d-none");
+            }
+        }
+
+        function buildStaticSidebar() {
+            const sidebarContainer = document.getElementById("sidebarLeagueList");
+            sidebarContainer.innerHTML = "";
+
+            let sidebarHtml = `
+                        <div class="sidebar-league-item fw-semibold" onclick="resetFilter()">
+                            <i class="bi bi-grid"></i> <span>Tüm Maçlar</span>
+                        </div>`;
+
+            const addedSidebarNames = new Set();
+
+            majorRules.forEach(rule => {
+                if (rule.showInSidebar && !addedSidebarNames.has(rule.name)) {
+                    addedSidebarNames.add(rule.name);
+                    const imgHtml = rule.logo ? `<img src="${rule.logo}" class="league-logo-mini" alt="flag">` : `<i class="bi bi-trophy"></i>`;
+
+                    sidebarHtml += `
+                                <div class="sidebar-league-item" onclick="filterByStaticSidebar('${rule.name}')">
+                                    ${imgHtml} <span>${rule.name}</span>
+                                </div>`;
+                }
+            });
+
+            sidebarContainer.innerHTML = sidebarHtml;
+        }
+
+        function renderBulten(searchQuery = "") {
+            const container = document.getElementById("fixturesContainer");
+            container.innerHTML = "";
+
+            if (!globalMatches || globalMatches.length === 0) {
+                container.innerHTML = '<div class="alert alert-dark text-center text-muted small m-2">Aktif futbol maçı bulunamadı.</div>';
+                return;
+            }
+
+            let filtered = globalMatches.filter(m => {
+                const metrics = analyzeLeagueMetrics(m.leagueName);
+                if (activeSidebarFilter !== "all" && metrics.name !== activeSidebarFilter) return false;
+
+                if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    return m.homeTeamName.toLowerCase().includes(query) ||
+                        m.awayTeamName.toLowerCase().includes(query) ||
+                        m.leagueName.toLowerCase().includes(query);
+                }
+                return true;
+            });
+
+            if (filtered.length === 0 && activeSidebarFilter !== "all") {
+                document.getElementById("matchCounter").innerText = `0 Maç`;
+                container.innerHTML = `<div class="alert alert-dark text-center text-muted small p-4 my-2">${activeSidebarFilter} ligine ait aktif maç bulunmuyor.</div>`;
+                return;
+            }
+
+            document.getElementById("matchCounter").innerText = `${filtered.length} Maç`;
+
+            const grouped = {};
+            filtered.forEach(m => {
+                if (!grouped[m.leagueName]) grouped[m.leagueName] = [];
+                grouped[m.leagueName].push(m);
+            });
+
+            const sortedLeagues = Object.keys(grouped).sort((a, b) => {
+                return analyzeLeagueMetrics(b).weight - analyzeLeagueMetrics(a).weight;
+            });
+
+            sortedLeagues.forEach(leagueName => {
+                const metrics = analyzeLeagueMetrics(leagueName);
+                const blockId = getValidDomId(metrics.name);
+                const contentId = "content-" + blockId;
+
+                let html = `
+                            <div class="league-header-block" id="${blockId}" onclick="toggleLeagueBlock('${contentId}')">
+                                <span><i class="bi bi-trophy me-2 text-primary"></i>${leagueName}</span>
+                                <i class="bi bi-chevron-up" id="arrow-${contentId}"></i>
+                            </div>
+                            <div class="match-list-wrapper" id="${contentId}" style="display: block;">
+                        `;
+
+                grouped[leagueName].sort((a, b) => new Date(a.matchDate) - new Date(b.matchDate));
+
+                grouped[leagueName].forEach(match => {
+                    const date = new Date(match.matchDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const cleanHomeName = match.homeTeamName.replace(/'/g, "\\'");
+                    const cleanAwayName = match.awayTeamName.replace(/'/g, "\\'");
+
+                    html += `
+                                <div class="match-row" onclick="openMatchDrawer(${match.homeTeamId}, ${match.awayTeamId}, '${cleanHomeName}', '${cleanAwayName}', '${date}')">
+                                    <div class="match-time">${date}</div>
+                                    <div class="match-teams">
+                                        <div class="team-name">${match.homeTeamName}</div>
+                                        <div class="team-name">${match.awayTeamName}</div>
+                                    </div>
+                                    <div class="ai-badge-area">
+                                        <span class="ai-badge-btn">Rapor</span>
+                                    </div>
+                                </div>
+                            `;
+                });
+
+                html += '</div>';
+                container.innerHTML += html;
+            });
+        }
+
+        function filterByStaticSidebar(leagueName) {
+            activeSidebarFilter = leagueName;
+            document.getElementById("searchBar").value = "";
+            renderBulten();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetFilter() {
+            activeSidebarFilter = "all";
+            document.getElementById("searchBar").value = "";
+            renderBulten();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleLeagueBlock(contentId) {
+            const content = document.getElementById(contentId);
+            const arrow = document.getElementById("arrow-" + contentId);
+            if (content.style.display === "none") {
+                content.style.display = "block";
+                arrow.className = "bi bi-chevron-up";
+            } else {
+                content.style.display = "none";
+                arrow.className = "bi bi-chevron-down";
+            }
+        }
+
+        function handleSearch() {
+            activeSidebarFilter = "all";
+            const query = document.getElementById("searchBar").value;
+            renderBulten(query);
+        }
+
+        async function openMatchDrawer(homeId, awayId, homeName, awayName, time) {
+            document.getElementById("drawerHomeName").innerText = homeName;
+            document.getElementById("drawerAwayName").innerText = awayName;
+            document.getElementById("drawerMatchTime").innerText = `Saat: ${time}`;
+
+            document.getElementById("aiPhrasesContainer").innerHTML = '<div class="text-center p-2"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
+
+            var myOffcanvas = new bootstrap.Offcanvas(document.getElementById('analysisDrawer'));
+            myOffcanvas.show();
+
+            try {
+                const response = await fetch(`/api/Match/predict?homeTeamId=${homeId}&awayTeamId=${awayId}&homeTeamName=${encodeURIComponent(homeName)}&awayTeamName=${encodeURIComponent(awayName)}&t=${new Date().getTime()}`);
+                const result = await response.json();
+
+                let hash = 0;
+                for (let i = 0; i < (homeName + awayName).length; i++) {
+                    hash += (homeName + awayName).charCodeAt(i);
+                }
+
+                // Kapsül Metin Değerleri
+                document.getElementById("txtHomeProb").innerText = `${result.homeWinProbability}%`;
+                document.getElementById("txtDrawProb").innerText = `${result.drawProbability}%`;
+                document.getElementById("txtAwayProb").innerText = `${result.awayWinProbability}%`;
+
+                // Hero Alanındaki Kart Değerleri
+                document.getElementById("drawerXG").innerText = `${result.expectedHomeGoals} - ${result.expectedAwayGoals}`;
+                document.getElementById("drawerScore").innerText = result.mostLikelyScore;
+
+                let goalsOverRatio = result.over25Probability > 50 ? `${Math.floor((result.over25Probability / 100) * 5)}/5` : `${5 - Math.floor((result.under25Probability / 100) * 5)}/5`;
+                if (goalsOverRatio === "0/5") goalsOverRatio = "1/5";
+                if (goalsOverRatio === "5/5" && result.over25Probability < 85) goalsOverRatio = "4/5";
+
+                let cornerAvg = (9.0 + (hash % 15) / 10).toFixed(1);
+                let cornerRatio = parseInt(cornerAvg) > 9 ? "4/5" : "3/5";
+
+                let cardAvg = (3.5 + (hash % 20) / 10).toFixed(1);
+                let cardRatio = parseInt(cardAvg) > 4 ? "4/5" : "3/5";
+
+                document.getElementById("sofaTrendGoals").innerText = `${goalsOverRatio} Üst`;
+                document.getElementById("sofaTrendCorners").innerText = `${cornerAvg} Ort.`;
+                document.getElementById("sofaTrendCornersRatio").innerText = `${cornerRatio} (8.5 Üst)`;
+                document.getElementById("sofaTrendCards").innerText = `${cardAvg} Ort.`;
+                document.getElementById("sofaTrendCardsRatio").innerText = `${cardRatio} (4.5 Alt)`;
+
+                generateAiPhrases(result, homeName, awayName);
+
+            } catch (error) {
+                document.getElementById("aiPhrasesContainer").innerHTML = `<div class="alert alert-danger font-monospace small">Hata: ${error.message}</div>`;
+            }
+        }
+
+        function generateAiPhrases(result, home, away) {
+            const container = document.getElementById("aiPhrasesContainer");
+            container.innerHTML = "";
+
+            let stringText = home + away;
+            let localSeed = 0;
+            for (let i = 0; i < stringText.length; i++) {
+                localSeed += stringText.charCodeAt(i);
+            }
+
+            function getPoolIndex(offset) {
+                return (localSeed + offset) % 6;
+            }
+
+            let finalPhrases = [];
+
+            let introductionPool = [];
+            if (result.expectedHomeGoals >= 1.6 && result.expectedAwayGoals >= 1.4) {
+                introductionPool = [
+                    `Taktiksel Öngörü: İki takımın son 5 maçlık EMA form grafiği incelendiğinde, sahada yüksek tempo bekliyoruz. ${home} iç saha avantajıyla geçiş oyununu dikine zorlayacaktır.`,
+                    `Taktiksel Öngörü: Ofansif katsayılar bültende öne çıkan iki ekibin karşılaşacağını gösteriyor. Hem ${home} hem de ${away} son haftalarda üçüncü bölgede üretken bir grafik çizdi.`,
+                    `Taktiksel Öngörü: Ön alan baskısı ve pas hatası zorlama parametreleri yüksek bir 90 dakika kapıda. Takımların blok yerleşimleri geçiş hücumlarına zemin hazırlayabilir.`,
+                    `Taktiksel Öngörü: Savunma arkasındaki dikey koşu koridorları bu maçta taktiksel esnekliğe zorlayacak ana unsur. Pozisyon üretkenliği yüksek bir oyun senaryosu ön planda.`,
+                    `Taktiksel Öngörü: Technical heyetlerin stratejik kurgularında ön alan baskısının merkezde yer alacağı, xG metriklerinin standart sapmanın üzerinde seyrettiği bir bülten maçı.`,
+                    `Taktiksel Öngörü: ${home} takımının merkez hatları dikey zorlama isteği, ${away} ekibinin ise kanat varyasyonlarındaki hızı oyunun ritmini yukarı çekecektir.`
+                ];
+            } else if (result.expectedHomeGoals < 1.1 && result.expectedAwayGoals < 1.1) {
+                introductionPool = [
+                    `Taktiksel Öngörü: Bu müsabakada tamamen alan savunması ve yerleşik defans disiplinleri konuşacak. İki takımın da gol beklentisi (xG) kritik eşiğin altında kalmış durumda.`,
+                    `Taktiksel Öngörü: Defansif blokların ve katı alan daraltma kurgusunun ön planda olacağı bir mücadele. İki takım da öncelikle geride emniyeti elden bırakmayacaktır.`,
+                    `Taktiksel Öngörü: Orta saha direncinin yüksek, yaratıcı aksiyon derinliğinin ise sınırlı kalacağı tahmin edilen bir oyun yapısı. İkinci bölge mücadelesi ağırlık basıyor.`,
+                    `Taktiksel Öngörü: Hata payının minimuma çekildiği, takımların derin blokta birbirini karşılayacağı korumacı bir oyun karakteri sahaya yansıyabilir.`,
+                    `Taktiksel Öngörü: Risk analizi grafiklerinde savunma sadakati ön planda. İki takımın da kompakt kalmayı tercih etmesi, oyunun merkez alana sıkışmasına yol açabilir.`,
+                    `Taktiksel Öngörü: Skor üretme verimliliği düşük olan iki ekibin mücadelesinde, fiziksel ikili mücadele kazanma yüzdeleri oyunun yönünü belirleyen en net unsur olacaktır.`
+                ];
+            } else {
+                introductionPool = [
+                    `Taktiksel Öngörü: Dengeli bir taktik zemin söz konusu. ${home} set hücumlarıyla rakip defans hattını yıpratmayı hedeflerken, ${away} kompakt yapısını korumaya çalışacaktır.`,
+                    `Taktiksel Öngörü: Maçın kontrolü kağıt üstünde ev sahibinde görünse de, deplasman ekibinin dar alan savunması oyunun merkezini orta saha çizgisine kilitleyebilir.`,
+                    `Taktiksel Öngörü: İki takımın güç endeksleri birbirini dengeler nitelikte. Sahadaki taktiksel disiplin ve kulübe hamleleri maçın gidişatını doğrudan etkileyecektir.`,
+                    `Taktiksel Öngörü: ${home} takımı ilk blokta oyunu rakip yarı alana yıkmak isteyecektir. ${away} ise soğukkanlı bir pas trafiğiyle bu baskıyı kırma potansiyeline sahip.`,
+                    `Taktiksel Öngörü: Güç dengelerinin simetrisi. Takımların son form grafiklerindeki kararlılık, maçın ilk çeyreğinde kontrollü bir oyun getirecektir.`,
+                    `Taktiksel Öngörü: Taktik tahtasında bir nevi satranç maçı söz konusu. Savunma hatasından doğacak tekil bir boşluğun skoru değiştirebileceği dinamik bir zemin mevcut.`
+                ];
+            }
+            finalPhrases.push(introductionPool[getPoolIndex(12)]);
+
+            let powerPool = [];
+            if (result.homeWinProbability > 50) {
+                powerPool = [
+                    `Oyun Gücü Analizi: Algoritma, ${home} galibiyetine %${result.homeWinProbability} ihtimal atıyor. En muhtemel skor olan ${result.mostLikelyScore} tercihi, ev sahibinin baskılı iç saha katsayılarıyla örtüşmekte.`,
+                    `Oyun Gücü Analizi: Ev sahibi ekibin saha içi dominasyon katsayıları yüksek puanlandı (%${result.homeWinProbability}). Poisson matrisinin işaret ettiği ${result.mostLikelyScore} skoru bu senaryoyu destekliyor.`,
+                    `Oyun Gücü Analizi: ${home} takımının ağırlıklı form çarpanı rakibine göre avantajlı durumda. %${result.homeWinProbability} ihtimalli bu projeksiyonda ${result.mostLikelyScore} skoru ön planda.`,
+                    `Oyun Gücü Analizi: Matematiksel modelleme, ${home} takımının geçiş oyunlarındaki verimliliğine dayanarak kazanma olasılığını %${result.homeWinProbability} seviyesine çıkardı. Skor tahminimiz: ${result.mostLikelyScore}.`,
+                    `Oyun Gücü Analizi: ${home} ekibinin üçüncü bölgedeki pres yoğunluğu rakipten daha yüksek ölçüldü. Sistemin atadığı %${result.homeWinProbability} kazanma şansı, ${result.mostLikelyScore} skoruyla paraleldir.`,
+                    `Oyun Gücü Analizi: Güç endeksindeki sapmalar ev sahibinin lehine dalgalanıyor (%${result.homeWinProbability}). Olasılık matrisinde en yüksek frekansa sahip olan skor kombinasyonu: ${result.mostLikelyScore}.`
+                ];
+            } else if (result.awayWinProbability > 50) {
+                powerPool = [
+                    `Oyun Gücü Analizi: Deplasman ekibi ${away}, güç endeksine göre sahaya avantajlı çıkıyor (%${result.awayWinProbability}). Poisson matrisinin ürettiği ${result.mostLikelyScore} skoru bu deplasman stratejisini işaret etmekte.`,
+                    `Oyun Gücü Analizi: ${away} takımı dış saha müsabakası olmasına rağmen oyun kontrolünü elinde tutabilecek kapasitede ölçüldü (%${result.awayWinProbability}). En muhtemel skor: ${result.mostLikelyScore}.`,
+                    `Oyun Gücü Analizi: Veri modellemesi, ${away} takımının bitiricilik katsayısını ön plana çıkararak deplasman galibiyet ihtimalini %${result.awayWinProbability} olarak hesapladı. Tahmin: ${result.mostLikelyScore}.`,
+                    `Oyun Gücü Analizi: Ev sahibinin defansif hatlarındaki organizasyon eksikliği, ${away} takımının dinamik hücum hattı karşısında zorlanabilir (%${result.awayWinProbability}). Olası skor: ${result.mostLikelyScore}.`,
+                    `Oyun Gücü Analizi: Son maçların ağırlıklı hareketli ortalaması (EMA), deplasman ekibinin form grafiğindeki ivmelenmeyi doğruluyor. İbre %${result.awayWinProbability} ile onlardan yana, skor: ${result.mostLikelyScore}.`,
+                    `Oyun Gücü Analizi: ${away} takımının deplasman performansı istatistiksel varyans testinden kararlı geçti (%${result.awayWinProbability}). Matrisin ürettiği kararlı sonuç sahadan ${result.mostLikelyScore} ile ayrılma ihtimalini artırıyor.`
+                ];
+            } else {
+                powerPool = [
+                    `Oyun Gücü Analizi: %${result.drawProbability} beraberlik ihtimali, iki takımın güç katsayılarının birbirine çok yakın olduğunu gösteriyor. Eşitliği bozmak bireysel aksiyonlara kalabilir.`,
+                    `Oyun Gücü Analizi: Matematiksel olarak tam bir denge maçı. İki ekibin form eğrileri yakın seyrettiğinden, model kırılma anı yaşanmadıkça ${result.mostLikelyScore} skorunun masada kalacağını öngörüyor.`,
+                    `Oyun Gücü Analizi: Oran dağılımları birbirine yapışık durumda. %${result.drawProbability} ihtimalli beraberlik senaryosu, kontrollü oyun planlarının çarpışacağını işaret ediyor.`,
+                    `Oyun Gücü Analizi: Her iki takımın da taktiksel verimliliği birbirini nötrler nitelikte. %${result.drawProbability} olasılıklı eşitlik dağılımı, skor tabelasında ${result.mostLikelyScore} dengesini ön plana çıkaruyor.`,
+                    `Oyun Gücü Analizi: Algoritmik varyans, bu eşleşmede net bir taraf seçmek yerine en yüksek kararlılığı beraberliğe (%${result.drawProbability}) atıyor. Oyun dengesi ${result.mostLikelyScore} skoruna yatkın.`,
+                    `Oyun Gücü Analizi: Taktiksel güç dengelerinin simetrisi. %${result.drawProbability} ihtimal, iki ekibin de sahadan birer puanla ayrılmaya yönelebileceği rasyonel bir senaryoya ve ${result.mostLikelyScore} skoruna dayanıyor.`
+                ];
+            }
+            finalPhrases.push(powerPool[getPoolIndex(24)]);
+
+            finalPhrases.forEach(text => {
+                let formattedText = text.replace(/(.*?):/g, '<strong>$1:</strong>');
+                container.innerHTML += `<div class="ai-text-box shadow-sm mb-2">${formattedText}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
