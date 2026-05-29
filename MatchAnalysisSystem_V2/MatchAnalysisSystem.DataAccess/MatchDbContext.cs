@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MatchAnalysisSystem.Core.Entities;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-
 namespace MatchAnalysisSystem.DataAccess
 {
     public class MatchDbContext : DbContext
@@ -14,6 +11,9 @@ namespace MatchAnalysisSystem.DataAccess
         // Veri tabanında oluşacak tablolarımız
         public DbSet<Team> Teams { get; set; }
         public DbSet<MatchHistory> MatchHistories { get; set; }
+
+        // MatchDbContext.cs içine eklenecek satır:
+        public DbSet<MatchPrediction> MatchPredictions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +32,12 @@ namespace MatchAnalysisSystem.DataAccess
                 .WithMany()
                 .HasForeignKey(m => m.AwayTeamId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<MatchPrediction>(entity =>
+            {
+                entity.Property(p => p.CacheKey).HasMaxLength(64).IsRequired();
+                entity.HasIndex(p => p.CacheKey).IsUnique();
+            });
         }
     }
 }

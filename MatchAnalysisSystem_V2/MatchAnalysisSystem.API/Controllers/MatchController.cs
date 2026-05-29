@@ -3,9 +3,6 @@ using MatchAnalysisSystem.Business.Services;
 using MatchAnalysisSystem.Core.Entities;
 using MatchAnalysisSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MatchAnalysisSystem.API.Controllers
 {
@@ -16,15 +13,20 @@ namespace MatchAnalysisSystem.API.Controllers
         private readonly DataManagementManager _dataManager;
         private readonly MatchDbContext _context;
         private readonly FootballApiService _apiService;
+        private readonly MatchPredictionService _predictionService;
 
-        public MatchController(DataManagementManager dataManager, MatchDbContext context, FootballApiService apiService)
+        public MatchController(
+            DataManagementManager dataManager,
+            MatchDbContext context,
+            FootballApiService apiService,
+            MatchPredictionService predictionService)
         {
             _dataManager = dataManager;
             _context = context;
             _apiService = apiService;
+            _predictionService = predictionService;
         }
 
-        // 1. Takım Ekleme Ucu
         [HttpPost("add-team")]
         public async Task<IActionResult> AddTeam([FromQuery] string name, [FromQuery] double attack = 1.0, [FromQuery] double defense = 1.0)
         {
@@ -33,7 +35,6 @@ namespace MatchAnalysisSystem.API.Controllers
             return Ok(new { Message = "Takım başarıyla eklendi!", Team = team });
         }
 
-        // 2. Takımları Listeleme Ucu
         [HttpGet("teams")]
         public async Task<IActionResult> GetTeams()
         {
@@ -41,117 +42,57 @@ namespace MatchAnalysisSystem.API.Controllers
             return Ok(teams);
         }
 
-        // 3. Dinamik Analiz ve Tahmin Ucu (%100 Her Bilgisayarda Sabit ve 24 Saat Tutarlı Model)
+        /// <summary>
+        /// Maç tahmini: Azure SQL önbelleğinden okur veya ilk istekte hesaplayıp kaydeder.
+        /// Tüm kullanıcılar aynı gün için aynı sonucu görür.
+        /// </summary>
         [HttpGet("predict")]
-        public async Task<IActionResult> PredictMatchFromDb([FromQuery] int homeTeamId, [FromQuery] int awayTeamId, [FromQuery] string homeTeamName, [FromQuery] string awayTeamName)
+        public async Task<IActionResult> PredictMatchFromDb(
+            [FromQuery] int homeTeamId,
+            [FromQuery] int awayTeamId,
+            [FromQuery] string homeTeamName,
+            [FromQuery] string awayTeamName)
         {
-            // 🎯 SARSILMAZ TUTARLILIK KİLİDİ (24 SAATLİK DÖNGÜ): 
-            // Takım isimlerinin hash koduna bugünün 'Yılın Kaçıncı Günü' olduğunu ekliyoruz.
-            // Bu sayede bilgisayar 100 kere kapansa bile gün boyu aynı maç için hep aynı tohum üretilir.
-            // Saat 00:00'ı geçtiğinde gün değişeceği için sistem otomatik yeni tahminler üretir!
-            int dailySeedModifier = DateTime.Today.DayOfYear;
-            int matchSeed = (homeTeamName + awayTeamName).GetHashCode() + dailySeedModifier;
-            var random = new Random(matchSeed);
+            var fixtures = await _apiService.GetDailyFixturesAsync();
+            var currentFixture = fixtures?.FirstOrDefault(f => f.HomeTeamId == homeTeamId && f.AwayTeamId == awayTeamId);
 
-            // Simüle edilen maç skorları için de gün kilitli tohum kullanıyoruz
-            var matchDataRandom = new Random((homeTeamId * awayTeamId) + dailySeedModifier);
+            bool isMatchLive = false;
+            // isMatchLive = currentFixture != null && currentFixture.Status == "LIVE";
 
-            // 🎲 Box-Muller Gauss Varyans Üretici (Sabit Tohumdan Beslenir)
-            Func<double, double, double> generateGaussian = (mean, stdDev) => {
-                double u1 = 1.0 - random.NextDouble();
-                double u2 = 1.0 - random.NextDouble();
-                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
-                return mean + stdDev * randStdNormal;
-            };
-
-            // 1. 🧠 Veri tabanından bağımsız, RAM üzerinde tamamen izole iki takım nesnesi üretiyoruz
-            var homeTeam = new Team
+            if (isMatchLive)
             {
-                Id = homeTeamId,
-                Name = homeTeamName,
-                AttackRating = 1.0,
-                DefenseRating = 1.0
-            };
-
-            var awayTeam = new Team
-            {
-                Id = awayTeamId,
-                Name = awayTeamName,
-                AttackRating = 1.0,
-                DefenseRating = 1.0
-            };
-
-            // 2. RAM üzerinde uçacak geçici maç listeleri
-            var homeMatches = new List<MatchHistory>();
-            var awayMatches = new List<MatchHistory>();
-
-            // 3. Ev sahibi için internetten verileri çekmeyi dene, gelmezse veya 0-0 kilitliyse RAM'de üret
-            var realHomeHistory = await _apiService.GetTeamLiveMatchHistoryAsync(homeTeamId);
-            if (realHomeHistory != null && realHomeHistory.Count > 0)
-            {
-                int count = 1;
-                foreach (var m in realHomeHistory)
-                {
-                    // API verisi boşsa veya kısırsa organik futbol dağılımını tohumlu üretiyoruz (Her zaman aynı kalır)
-                    if (m.HomeGoals == 0 && m.AwayGoals == 0)
-                    {
-                        m.HomeGoals = matchDataRandom.Next(0, 4);
-                        m.AwayGoals = matchDataRandom.Next(0, 3);
-                    }
-                    m.HomeTeamId = homeTeamId;
-                    m.AwayTeamId = 70000 + count; // Tamamen izole geçici ID
-                    homeMatches.Add(m);
-                    count++;
-                }
-            }
-            else
-            {
-                // API tamamen boş dönerse sistem çökmesin diye RAM'de 5 maçlık sabit simülasyon basıyoruz
-                for (int i = 1; i <= 5; i++)
-                {
-                    homeMatches.Add(new MatchHistory { HomeTeamId = homeTeamId, AwayTeamId = 70000 + i, HomeGoals = matchDataRandom.Next(0, 4), AwayGoals = matchDataRandom.Next(0, 3) });
-                }
+                var liveResult = await GenerateLiveMatchAnalysis(homeTeamId, awayTeamId, homeTeamName, awayTeamName);
+                return Ok(liveResult);
             }
 
-            // 4. Deplasman için internetten verileri çekmeyi dene, gelmezse veya 0-0 kilitliyse RAM'de üret
-            var realAwayHistory = await _apiService.GetTeamLiveMatchHistoryAsync(awayTeamId);
-            if (realAwayHistory != null && realAwayHistory.Count > 0)
-            {
-                int count = 1;
-                foreach (var m in realAwayHistory)
-                {
-                    if (m.HomeGoals == 0 && m.AwayGoals == 0)
-                    {
-                        m.HomeGoals = matchDataRandom.Next(0, 3);
-                        m.AwayGoals = matchDataRandom.Next(0, 4);
-                    }
-                    m.HomeTeamId = 60000 + count; // Tamamen izole geçici ID
-                    m.AwayTeamId = awayTeamId;
-                    awayMatches.Add(m);
-                    count++;
-                }
-            }
-            else
-            {
-                for (int i = 1; i <= 5; i++)
-                {
-                    awayMatches.Add(new MatchHistory { HomeTeamId = 60000 + i, AwayTeamId = awayTeamId, HomeGoals = matchDataRandom.Next(0, 3), AwayGoals = matchDataRandom.Next(0, 4) });
-                }
-            }
-
-            // 5. 🚀 AKILLI GÜÇ ENJEKSİYONU
-            // Güç varyasyonları yine dinamik dağılacak ama bu maça özel olarak dünyanın her yerinde sabit kalacak.
-            homeTeam.AttackRating = Math.Clamp(generateGaussian(1.1, 0.1), 0.8, 1.4);
-            awayTeam.DefenseRating = Math.Clamp(generateGaussian(1.0, 0.1), 0.8, 1.4);
-
-            // 6. Mühürlü motorla analizi koşturup sonucu ön yüze fırlatıyoruz
-            var freshAnalysisManager = new PoissonAnalysisManager();
-            var result = freshAnalysisManager.PredictMatchDinamik(homeTeam, homeMatches, awayTeam, awayMatches);
+            var result = await _predictionService.GetOrCreatePredictionAsync(
+                homeTeamId, awayTeamId, homeTeamName, awayTeamName);
 
             return Ok(result);
         }
 
-        // 4. Manuel Maç Geçmişi Ekleme Ucu
+        private async Task<object> GenerateLiveMatchAnalysis(int homeId, int awayId, string homeName, string awayName)
+        {
+            int dailySeedModifier = DateTime.Today.DayOfYear;
+            int matchSeed = (homeId * 31) + awayId + dailySeedModifier;
+            var liveRand = new Random(matchSeed);
+
+            double liveExpectedHome = Math.Round(0.5 + (liveRand.NextDouble() * 3.0), 2);
+            double liveExpectedAway = Math.Round(0.3 + (liveRand.NextDouble() * 2.5), 2);
+
+            return new
+            {
+                ExpectedHomeGoals = liveExpectedHome,
+                ExpectedAwayGoals = liveExpectedAway,
+                MostLikelyScore = $"{liveRand.Next(0, 4)} - {liveRand.Next(0, 4)}",
+                HomeWinProbability = liveRand.Next(20, 60),
+                DrawProbability = liveRand.Next(10, 30),
+                AwayWinProbability = liveRand.Next(20, 50),
+                Over25Probability = liveRand.Next(40, 90),
+                Under25Probability = liveRand.Next(10, 60)
+            };
+        }
+
         [HttpPost("add-match-history")]
         public async Task<IActionResult> AddMatchHistory([FromBody] MatchHistoryInput input)
         {
@@ -177,7 +118,6 @@ namespace MatchAnalysisSystem.API.Controllers
             return Ok(new { Message = "Maç geçmişi başarıyla kaydedildi!", MatchId = match.Id });
         }
 
-        // 5. Günlük Canlı Fikstür Bülteni Çeken Uç
         [HttpGet("daily-fixtures")]
         public async Task<IActionResult> GetLiveDailyFixtures()
         {

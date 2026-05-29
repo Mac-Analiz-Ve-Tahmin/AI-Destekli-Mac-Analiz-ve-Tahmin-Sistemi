@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using MatchAnalysisSystem.Core.Entities;
+using MatchAnalysisSystem.Core.Helpers;
 
 namespace MatchAnalysisSystem.Business.Services
 {
@@ -64,12 +65,10 @@ namespace MatchAnalysisSystem.Business.Services
                         {
                             int.TryParse(ev.EVENT_ID?.Replace("g_", ""), out int customId);
 
-                            // Takım ID'lerini string hash üzerinden benzersiz int değerlerine dönüştürüyoruz
-                            int homeId = ev.HOME_PARTICIPANT_IDS != null && ev.HOME_PARTICIPANT_IDS.Length > 0
-                                ? Math.Abs(ev.HOME_PARTICIPANT_IDS[0].GetHashCode()) % 100000 : 0;
-
-                            int awayId = ev.AWAY_PARTICIPANT_IDS != null && ev.AWAY_PARTICIPANT_IDS.Length > 0
-                                ? Math.Abs(ev.AWAY_PARTICIPANT_IDS[0].GetHashCode()) % 100000 : 0;
+                            string homeParticipantId = ev.HOME_PARTICIPANT_IDS != null && ev.HOME_PARTICIPANT_IDS.Length > 0
+                                ? ev.HOME_PARTICIPANT_IDS[0] : string.Empty;
+                            string awayParticipantId = ev.AWAY_PARTICIPANT_IDS != null && ev.AWAY_PARTICIPANT_IDS.Length > 0
+                                ? ev.AWAY_PARTICIPANT_IDS[0] : string.Empty;
 
                             fixtures.Add(new LiveFixture
                             {
@@ -78,9 +77,11 @@ namespace MatchAnalysisSystem.Business.Services
                                     ? DateTimeOffset.FromUnixTimeSeconds(ev.START_UTIME).DateTime.ToLocalTime()
                                     : DateTime.Now,
                                 LeagueName = fullLeagueName,
-                                HomeTeamId = homeId,
+                                HomeParticipantId = homeParticipantId,
+                                HomeTeamId = StableIdHelper.FromParticipantId(homeParticipantId),
                                 HomeTeamName = ev.HOME_NAME ?? "Ev Sahibi",
-                                AwayTeamId = awayId,
+                                AwayParticipantId = awayParticipantId,
+                                AwayTeamId = StableIdHelper.FromParticipantId(awayParticipantId),
                                 AwayTeamName = ev.AWAY_NAME ?? "Deplasman"
                             });
                         }
@@ -100,16 +101,18 @@ namespace MatchAnalysisSystem.Business.Services
             return fixtures;
         }
 
-        // 2. Takımların Son 5 Maçlık Gerçek İstatistiklerini API'den Çeken Yeni Metot
-        public async Task<List<MatchHistory>> GetTeamLiveMatchHistoryAsync(int teamId)
+        // 2. Takımın son maçları (Flashlive participant ID ile — int hash değil)
+        public async Task<List<MatchHistory>> GetTeamLiveMatchHistoryAsync(string participantId)
         {
             var histories = new List<MatchHistory>();
 
+            if (string.IsNullOrWhiteSpace(participantId))
+                return histories;
+
             try
             {
-                // API'nin takım geçmiş sonuçları (teams/results) ucuna istek fırlatıyoruz
                 var response = await _httpClient.GetFromJsonAsync<FlashliveResponse>(
-                    $"teams/results?team_id={teamId}&sport_id=1&locale=en_INT");
+                    $"teams/results?team_id={Uri.EscapeDataString(participantId)}&sport_id=1&locale=en_INT");
 
                 if (response?.DATA != null && response.DATA.Length > 0)
                 {
@@ -122,28 +125,35 @@ namespace MatchAnalysisSystem.Business.Services
 
                         foreach (var ev in last5Events)
                         {
-                            // Skor metinlerini güvenli bir şekilde tam sayıya (int) çeviriyoruz
-                            int.TryParse(ev.HOME_SCORE_CURRENT, out int homeGoals);
-                            int.TryParse(ev.AWAY_SCORE_CURRENT, out int awayGoals);
+                            if (!int.TryParse(ev.HOME_SCORE_CURRENT, out int homeGoals) ||
+                                !int.TryParse(ev.AWAY_SCORE_CURRENT, out int awayGoals))
+                                continue;
 
-                            // API'den ham şut/korner nesnesi boş gelirse Poisson motorunu beslemek için 
-                            // atılan gole orantılı dinamik organik futbol taban değerleri üretiyoruz
-                            int homeCorners = Math.Max(4, homeGoals + 2);
-                            int awayCorners = Math.Max(3, awayGoals + 1);
-                            int homeShots = Math.Max(5, homeGoals + 3);
-                            int awayShots = Math.Max(4, awayGoals + 2);
+                            bool teamWasHome = ev.HOME_PARTICIPANT_IDS != null &&
+                                ev.HOME_PARTICIPANT_IDS.Length > 0 &&
+                                string.Equals(ev.HOME_PARTICIPANT_IDS[0], participantId, StringComparison.OrdinalIgnoreCase);
+
+                            int teamStableId = StableIdHelper.FromParticipantId(participantId);
+                            string opponentParticipant = teamWasHome
+                                ? (ev.AWAY_PARTICIPANT_IDS != null && ev.AWAY_PARTICIPANT_IDS.Length > 0
+                                    ? ev.AWAY_PARTICIPANT_IDS[0] : string.Empty)
+                                : (ev.HOME_PARTICIPANT_IDS != null && ev.HOME_PARTICIPANT_IDS.Length > 0
+                                    ? ev.HOME_PARTICIPANT_IDS[0] : string.Empty);
+                            int opponentStableId = StableIdHelper.FromParticipantId(opponentParticipant);
 
                             histories.Add(new MatchHistory
                             {
                                 MatchDate = ev.START_UTIME > 0
                                     ? DateTimeOffset.FromUnixTimeSeconds(ev.START_UTIME).DateTime.ToLocalTime()
                                     : DateTime.Now,
+                                HomeTeamId = teamWasHome ? teamStableId : opponentStableId,
+                                AwayTeamId = teamWasHome ? opponentStableId : teamStableId,
                                 HomeGoals = homeGoals,
                                 AwayGoals = awayGoals,
-                                HomeCorners = homeCorners,
-                                AwayCorners = awayCorners,
-                                HomeShotsOnTarget = homeShots,
-                                AwayShotsOnTarget = awayShots
+                                HomeCorners = Math.Max(0, homeGoals + 2),
+                                AwayCorners = Math.Max(0, awayGoals + 1),
+                                HomeShotsOnTarget = Math.Max(0, homeGoals + 3),
+                                AwayShotsOnTarget = Math.Max(0, awayGoals + 2)
                             });
                         }
                     }
@@ -151,7 +161,7 @@ namespace MatchAnalysisSystem.Business.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Flashlive Takım Geçmiş Çekim Hatası (ID: {teamId}): {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flashlive Takım Geçmiş Çekim Hatası (ID: {participantId}): {ex.Message}");
             }
 
             return histories;
