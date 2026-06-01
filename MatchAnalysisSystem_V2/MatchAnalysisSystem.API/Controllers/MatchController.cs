@@ -5,7 +5,7 @@ using MatchAnalysisSystem.Core.Entities;
 using MatchAnalysisSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace MatchAnalysisSystem.API.Controllers
+namespace MatchAnalysisSystem.API.Controllers 
 {
     [ApiController]
     [Route("api/[controller]")]
