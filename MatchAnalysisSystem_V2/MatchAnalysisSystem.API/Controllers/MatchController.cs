@@ -1,4 +1,4 @@
-﻿// Jira Integration: KAN-21, KAN-23 subtasks completed.
+﻿// Jira Integration: KAN-21,KAN-22,KAN-23 subtasks completed.
 using Microsoft.AspNetCore.Mvc;
 using MatchAnalysisSystem.Business.Services;
 using MatchAnalysisSystem.Core.Entities;
