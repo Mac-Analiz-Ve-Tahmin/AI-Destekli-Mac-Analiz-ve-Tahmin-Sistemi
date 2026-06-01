@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Controller ve API Desteðini Ekliyoruz
 builder.Services.AddControllers();
+// KAN-32: Bellek önbellekleme servisi entegrasyonu
+builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // Test arayüzü için Swagger'ý ekledik
 
